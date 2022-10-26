@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<!-- Thymeleaf Namespace -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scale=0">
+<link href='https://fonts.googleapis.com/css?family=Roboto'
+	rel='stylesheet'>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<title th:utext="Fetch_example"></title>
+</head>
+<body>
+	<div class="wrap">
+
+		<header class="header">
+			<div class="container">
+				<div class="head_area">
+<!-- 					<img th:src="@{/img/MachineFaultLog-logo.webp}" alt="Project Logo" /> -->
+				</div>
+			</div>
+		</header>
+
+		<main>
+			<div class="container">
+				<div class="page">
+					<div class="main_menu_area"></div>
+					<div class="main_area">
+						<form class="form-data">
+						 <label class="form-label">Введите имя</label>
+						 <p></p>
+						<input class="form-input" type="text" name="name"
+							id="name"
+							autofocus="autofocus" autocomplete="off"
+							onkeydown="if(event.keyCode==13) return false;">
+							<!-- "onkeydown="if(event.keyCode==13) return false;" запрещает отправлять форму при нажатии клавиши Enter -->
+						<button type="submit">Отправить</button>
+						</form>
+						 <button class="gqv">GJJ</button>
+						<p></p>
+						<div id="root"></div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<footer> </footer>
+
+	</div>
+
+</body>
+<script>
+
+  /*для получения ответа  */
+/*   const getResourse = async (url) => {
+	 const response = await fetch(url);
+	 if(!response.ok){
+		 throw new Error('Ошибка по адресу ${url},статус ошибки ${response}');
+	 }
+	 return response.json();
+  };
+  getResourse('http://localhost:8080/fetchExample')
+  	.then((data) => console.log(data))  */
+ 
+  	/*для отправки данных  */	
+/*    	const sendData = async (url,data) => {
+  		const response = await fetch(url);
+  		if(!response.ok){
+  			 throw new Error('Ошибка по адресу ${url},статус ошибки ${response}');
+  		 }
+  		return await response.json();
+
+  	}
+  	
+     	const sendName = () =>{
+  		const nameForm = document.querySelector('.form-data');
+  	  	nameForm.addEventListener('submit',e => {
+  	  		e.preventDefault();
+  	  		const formData = new FormData(nameForm);
+  	  		console.log(formData.get('name'));
+  	  		const res = sendData('http://localhost:8080/'+ formData.get('name'))
+  	  	.then(data => {
+  	  	document.querySelector('#root').innerHTML=data.name;
+	     })
+  	  	});
+  	}
+     	
+   sendName(); */
+  
+ 	
+  
+  // строка, скачанная, как есть, с сайта-генератора "Lorem Ipsum..."
+  // будущая база данных
+  /*  let bdStr =  async () => {
+	  await getRequest();
+  };  */
+  
+  
+  
+  // приведение "базы" в "рабочее состояние"
+  // 1. в нижний регистр - toLowerCase()
+  // 2. в массив слов по паттерну "/\w+/g" - match()
+  // 3. в массив слов с длиной больше 2-ух символов - filter()
+  // 4. в массив слов в алфавитном порядке - sort()
+  // 5. удаление из массива повторов, если есть - [...new Set()]
+/*   let dataBase = [...new Set(
+      bdStr.toLowerCase().match(/\w+/g).filter((w) => {return w.length > 2;}).sort()
+  )]; */
+   
+  // поле ввода текста и объект с характеристиками поля
+  // пригодится, для удобного расположения контейнера с выпадающими подсказками
+  const areaSearch = document.getElementById('name');
+  const rect = areaSearch.getBoundingClientRect();
+   
+  // стили для контейнера
+  let containerStyle = '';
+      containerStyle += 'left: ' + rect.left + 'px;',
+      containerStyle += 'top: ' + rect.bottom + 'px;',
+      containerStyle += 'width: ' + rect.width + 'px;',
+      containerStyle += 'position: absolute;',
+      containerStyle += 'cursor: pointer;',
+      containerStyle += 'border-left,border-right,border-bottom,: 2px black solid;',
+      containerStyle += 'background-color: white;';
+   
+   
+  const container = document.createElement('div'); // контейнер для подсказок
+  container.style.cssText = containerStyle; // установка стилей
+  document.body.append(container); // в конец body
+   
+   
+  function checkArea(e) { // обработчик события input для поля
+   
+      container.innerHTML = ''; // очистка контейнера с подсказками
+      let val = this.value.trim(); // value поля
+      if( !val ) return; // если ничего нет, то выходим
+
+
+      try {
+    	  const result = sendName()//функция асинхронная,поэтому нужно работать через цепочки then.Чтобы вернуть синхронный результат нужно использовать методы Promise и return
+    	  .then(data => {
+  	  		data.forEach((word) => { // перебор итогового массива Json объектов
+            let div = document.createElement('div'); // новый элемент
+            div.innerHTML = word.name; // наполнение элемента словом-подсказкой.Из оыщт объекта получаем поле name
+            container.append(div); // вставка элемента в контейнер
+        })
+	     })
+    	} catch (err) {
+    	  console.log('Error: ', err.message);
+    	}
+    	 
+
+      /* let reg = new RegExp('^' + val + '\\w+'); // регулярка, для поиска совпадений
+   
+      bdList
+          .filter((word) => { // фильтрация массива dataBase
+              return reg.test(word); //в массив слов, прошедших проверку по регулярке
+          }) 
+          .forEach((word) => { // перебор итогового массива
+              let div = document.createElement('div'); // новый элемент
+              div.innerHTML = word; // наполнение элемента словом-подсказкой
+              container.append(div); // вставка элемента в контейнер
+          }); */
+   
+  }
+ 
+  /*для отправки данных с именем на сервер  */	
+  const sendName = () =>{
+		const nameForm = document.querySelector('.form-data');
+	  		const formData = new FormData(nameForm);
+	  		console.log(formData.get('name'));
+	  		const res = sendData('http://localhost:8080/'+ formData.get('name'))
+	  		return res;
+	}
+  /*для отправки данных с именем на сервер  */
+  const sendData = async (url,data) => {
+		const response = await fetch(url);
+		if(!response.ok){
+			 throw new Error('Ошибка по адресу ${url},статус ошибки ${response}');
+		 }
+		return await response.json();
+
+	}
+  
+  /* обработчик клика по контейнеру с подсказками */
+  function clickContainer(e) { 
+      areaSearch.value = e.target.innerHTML; // установка value из контейнера с подсказками
+      areaSearch.focus(); // возвратить фокус полю
+      this.innerHTML = ''; // очистка контейнера
+  }
+   
+  // установка обработчиков полю и контейнеру с подсказками
+  areaSearch.addEventListener('input', checkArea);
+  container.addEventListener('click', clickContainer);
+  
+</script>
+</html>
